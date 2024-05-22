@@ -13,8 +13,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.compose.CalendarTheme
 import sk.duri.calendar.ui.dayCalendar.DayCalendarScreen
 import sk.duri.calendar.ui.monthCalendar.MonthCalendarScreen
+import sk.duri.calendar.ui.monthCalendar.MonthCalendarViewModel
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -24,8 +26,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    //MonthCalendarScreen()
-                    DayCalendarScreen()
+                    //MonthCalendarScreen(modifier = Modifier)
+                    CalendarApp()
                 }
             }
         }

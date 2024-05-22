@@ -31,6 +31,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sk.duri.calendar.R
+import sk.duri.calendar.data.Udalost
+import sk.duri.calendar.ui.navigation.NavigationDestination
+import java.time.LocalTime
+import java.util.Date
+
+object DayCalendarDestination : NavigationDestination {
+    override val route = "dayCalendar"
+}
 
 @Composable
 fun DayCalendarScreen() {
@@ -156,6 +164,36 @@ fun HourSlot(
     }
 }
 
+@Composable
+fun Event(
+    modifier: Modifier = Modifier
+){
+    Box(modifier = modifier) {
+
+        Column(
+            modifier = Modifier
+                .padding(3.dp)
+                .background(MaterialTheme.colorScheme.primary)
+        ) {
+            Text(
+                text = "Event",
+                style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimary),
+                modifier = Modifier.padding(8.dp)
+            )
+            Text(
+                text = "Poznamka",
+                style = TextStyle(fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary),
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EventPreview() {
+    Event()
+}
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
