@@ -11,6 +11,7 @@ import java.util.Date
 
 class CreateEventViewModel(private val udalostiRepository: UdalostiRepository) {
 
+
     var udalostUiState by mutableStateOf(UdalostUiState())
         private set
 
@@ -24,10 +25,17 @@ class CreateEventViewModel(private val udalostiRepository: UdalostiRepository) {
         }
     }
 
-    private suspend fun saveUdalost() {
-        if (validateInput()) {
-            udalostiRepository.insertUdalost(udalostUiState.udalostDetails.toUdalost())
-        }
+    suspend fun saveEvent(name: String, dateFrom: Date, dateTo: Date, timeFrom: LocalTime, timeTo: LocalTime) {
+        val udalost = Udalost(
+            name = name,
+            dateFrom = dateFrom,
+            dateTo = dateTo,
+            timeFrom = timeFrom,
+            timeTo = timeTo,
+            poznamka = "",
+            typ = TypUdalosti.Udalost
+        )
+        udalostiRepository.insertUdalost(udalost)
     }
 
 

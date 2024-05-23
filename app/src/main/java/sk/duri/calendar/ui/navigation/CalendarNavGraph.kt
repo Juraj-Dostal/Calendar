@@ -30,7 +30,7 @@ fun CalendarNavHost(
             DayCalendarScreen()
         }
         composable(route =CreateEventDestination.route){
-            CreateEventScreen()
+            CreateEventScreen({})
         }
     }
 
