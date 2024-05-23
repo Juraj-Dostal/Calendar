@@ -39,6 +39,7 @@ object MonthCalendarDestination : NavigationDestination {
 
 @Composable
 fun MonthCalendarScreen(
+
     viewModel: MonthCalendarViewModel = MonthCalendarViewModel(),
     modifier: Modifier = Modifier
 ) {

@@ -10,9 +10,10 @@ import java.util.Date
 data class Udalost(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
-    val date: Date,
-    val from: LocalTime,
-    val to: LocalTime,
+    val dateFrom: Date,
+    val dateTo: Date,
+    val timeFrom: LocalTime,
+    val timeTo: LocalTime,
     val poznamka: String,
     val typ: TypUdalosti
 )

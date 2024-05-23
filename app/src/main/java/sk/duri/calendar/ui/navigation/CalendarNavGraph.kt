@@ -5,6 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import sk.duri.calendar.ui.CreateEvent.CreateEventDestination
+import sk.duri.calendar.ui.CreateEvent.CreateEventScreen
 import sk.duri.calendar.ui.dayCalendar.DayCalendarDestination
 import sk.duri.calendar.ui.dayCalendar.DayCalendarScreen
 import sk.duri.calendar.ui.monthCalendar.MonthCalendarDestination
@@ -12,7 +14,7 @@ import sk.duri.calendar.ui.monthCalendar.MonthCalendarScreen
 
 
 @Composable
-fun CalendarNavGraph(
+fun CalendarNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
@@ -26,6 +28,9 @@ fun CalendarNavGraph(
         }
         composable(route= DayCalendarDestination.route) {
             DayCalendarScreen()
+        }
+        composable(route =CreateEventDestination.route){
+            CreateEventScreen()
         }
     }
 

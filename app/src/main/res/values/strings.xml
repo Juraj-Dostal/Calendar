@@ -12,4 +12,5 @@
     <string name="october">October</string>
     <string name="november">November</string>
     <string name="december">December</string>
+    <string name="nameEvent">Name of event</string>
 </resources>

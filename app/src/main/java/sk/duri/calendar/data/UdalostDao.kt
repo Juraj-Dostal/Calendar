@@ -22,6 +22,6 @@ interface UdalostDao {
     @Delete
     suspend fun deleteUdalost(udalost: Udalost)
 
-    @Query("SELECT * FROM udalost WHERE date = :date")
-    fun getUdalostiVDni(date: Date): Flow<List<Udalost>>
+    //@Query("SELECT * FROM udalost WHERE date = :date")
+    //fun getUdalostiVDni(date: Date): Flow<List<Udalost>>
 }

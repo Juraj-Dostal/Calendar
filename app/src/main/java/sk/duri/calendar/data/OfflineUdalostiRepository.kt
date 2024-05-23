@@ -6,7 +6,8 @@ import java.util.Date
 class OfflineUdalostiRepository(private val udalostDao: UdalostDao) : UdalostiRepository {
 
     override fun getUdalostiVDni(date: Date): Flow<List<Udalost>> {
-        return udalostDao.getUdalostiVDni(date)
+        //return udalostDao.getUdalostiVDni(date)
+        throw NotImplementedError("Not implemented")
     }
 
     override suspend fun insertUdalost(udalost: Udalost) {
