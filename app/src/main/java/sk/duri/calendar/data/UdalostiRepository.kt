@@ -6,6 +6,8 @@ interface UdalostiRepository {
 
     fun getUdalostiVDni(date: Date): Flow<List<Udalost>>
 
+    fun getUdalosti(): Flow<List<Udalost>>
+
     suspend fun insertUdalost(udalost: Udalost)
 
     suspend fun updateUdalost(udalost: Udalost)

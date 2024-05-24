@@ -6,7 +6,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -43,7 +45,7 @@ fun CalendarApp(navController: NavHostController = rememberNavController()) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {  }) {
-                        Icon(Icons.Filled.Menu, contentDescription = "Settings")
+                        Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
                 },
                 actions = {
@@ -51,7 +53,7 @@ fun CalendarApp(navController: NavHostController = rememberNavController()) {
                         Icon(Icons.Filled.DateRange, contentDescription = "Change screen to MonthCalendar")
                     }
                     IconButton(onClick = { navController.navigate(DayCalendarDestination.route) }) {
-                        Icon(Icons.Filled.Build, contentDescription = "Change screen to DayCalendar")
+                        Icon(Icons.Filled.List, contentDescription = "Change screen to DayCalendar")
                     }
                 }
             )
