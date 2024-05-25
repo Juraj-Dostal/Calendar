@@ -102,8 +102,8 @@ class MonthCalendarViewModel() : ViewModel(){
 }
 
 data class CalendarUiState(
-    var month: Int = -1,
-    var year: Int = -1
+    var month: Int = 0,
+    var year: Int = 0
 )
 
 data class DaysUiState(

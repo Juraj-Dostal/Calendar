@@ -7,6 +7,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import sk.duri.calendar.ui.CreateEvent.CreateEventDestination
 import sk.duri.calendar.ui.CreateEvent.CreateEventScreen
+import sk.duri.calendar.ui.UdalostiApplication
 import sk.duri.calendar.ui.dayCalendar.DayCalendarDestination
 import sk.duri.calendar.ui.dayCalendar.DayCalendarScreen
 import sk.duri.calendar.ui.monthCalendar.MonthCalendarDestination
@@ -30,7 +31,7 @@ fun CalendarNavHost(
             DayCalendarScreen()
         }
         composable(route =CreateEventDestination.route){
-            CreateEventScreen({})
+            CreateEventScreen(navigateBack =  { /*TODO*/  })
         }
     }
 

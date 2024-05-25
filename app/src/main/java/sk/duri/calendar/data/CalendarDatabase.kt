@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
 @Database(entities = [Udalost::class], version = 1, exportSchema = false)
-@TypeConverters(Converters::class)
+@TypeConverters(CalendarConverter::class)
 abstract class CalendarDatabase : RoomDatabase(){
 
     abstract fun udalostDao(): UdalostDao

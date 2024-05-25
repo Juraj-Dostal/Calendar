@@ -3,17 +3,34 @@ package sk.duri.calendar.ui.CreateEvent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import sk.duri.calendar.data.TypUdalosti
 import sk.duri.calendar.data.Udalost
 import sk.duri.calendar.data.UdalostiRepository
-import java.time.LocalTime
-import java.util.Date
+import java.util.Calendar
 
-class CreateEventViewModel(private val udalostiRepository: UdalostiRepository) {
+class CreateEventViewModel(
+    savedStateHandle: SavedStateHandle,
+    val udalostiRepository: UdalostiRepository
+) : ViewModel(){
 
-
+    init {
+        viewModelScope.launch {
+            udalostUiState = udalostiRepository.getUdalost(udalostId)
+                .filterNotNull()
+                .first()
+                .toUdalostUiState(true)
+        }
+    }
     var udalostUiState by mutableStateOf(UdalostUiState())
         private set
+
+    private val udalostId: Int = checkNotNull(savedStateHandle[CreateEventDestination.udalostIdArg])
 
     fun updateUiState(udalostDetails: UdalostDetails) {
         udalostUiState = UdalostUiState(udalostDetails = udalostDetails, isEntryValid = validateInput(udalostDetails))
@@ -25,17 +42,8 @@ class CreateEventViewModel(private val udalostiRepository: UdalostiRepository) {
         }
     }
 
-    suspend fun saveEvent(name: String, dateFrom: Date, dateTo: Date, timeFrom: LocalTime, timeTo: LocalTime) {
-        val udalost = Udalost(
-            name = name,
-            dateFrom = dateFrom,
-            dateTo = dateTo,
-            timeFrom = timeFrom,
-            timeTo = timeTo,
-            poznamka = "",
-            typ = TypUdalosti.Udalost
-        )
-        udalostiRepository.insertUdalost(udalost)
+    suspend fun saveEvent() {
+        udalostiRepository.insertUdalost(udalostUiState.udalostDetails.toUdalost())
     }
 
 
@@ -49,21 +57,31 @@ data class UdalostUiState(
 data class UdalostDetails(
     val id: Int = 0,
     val name: String = "",
-    val dateFrom: Date = Date(),
-    val dateTo: Date = Date(),
-    val timeFrom: LocalTime = LocalTime.of(12, 0),
-    val timeTo: LocalTime = LocalTime.of(13, 0),
-    val poznamka: String = "",
+    val dateFrom: Calendar = Calendar.getInstance(),
+    val dateTo: Calendar = Calendar.getInstance(),
+    val note: String = "",
     val typ: TypUdalosti = TypUdalosti.Udalost
-) {
-    fun toUdalost(): Udalost = Udalost(
-        id = id,
-        name = name,
-        dateFrom = dateFrom,
-        dateTo = dateTo,
-        timeFrom = timeFrom,
-        timeTo = timeTo,
-        poznamka = poznamka,
-        typ = typ
-    )
-}
+)
+
+fun UdalostDetails.toUdalost(): Udalost = Udalost(
+    id = id,
+    name = name,
+    dateFrom = dateFrom,
+    dateTo = dateTo,
+    note = note,
+    typ = typ
+)
+
+fun Udalost.toUdalostUiState(isEntryValid: Boolean = false): UdalostUiState = UdalostUiState(
+    udalostDetails = this.toUdalostDetails(),
+    isEntryValid = isEntryValid
+)
+
+fun Udalost.toUdalostDetails(): UdalostDetails =  UdalostDetails(
+    id = id,
+    name = name,
+    dateFrom = dateFrom,
+    dateTo = dateTo,
+    note = note,
+    typ = typ
+)

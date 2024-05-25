@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.util.Calendar
 import java.util.Date
 
 @Dao
@@ -23,8 +24,10 @@ interface UdalostDao {
     suspend fun deleteUdalost(udalost: Udalost)
 
     @Query("SELECT * FROM udalost WHERE dateFrom = :date")
-    fun getUdalostiVDni(date: Date): Flow<List<Udalost>>
+    fun getUdalostiVDni(date: Calendar): Flow<List<Udalost>>
 
     @Query("SELECT * FROM udalost")
     fun getUdalosti(): Flow<List<Udalost>>
+    @Query("SELECT * FROM udalost WHERE id = :id")
+    fun getUdalost(id: Int): Flow<Udalost?>
 }

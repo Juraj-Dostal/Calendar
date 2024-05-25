@@ -31,6 +31,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import sk.duri.calendar.R
+import sk.duri.calendar.ui.AppViewModelProvider
 import sk.duri.calendar.ui.navigation.NavigationDestination
 
 object MonthCalendarDestination : NavigationDestination {
@@ -39,8 +40,7 @@ object MonthCalendarDestination : NavigationDestination {
 
 @Composable
 fun MonthCalendarScreen(
-
-    viewModel: MonthCalendarViewModel = MonthCalendarViewModel(),
+    viewModel: MonthCalendarViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier
 ) {
     val daysUiState = viewModel.daysUiState.collectAsState()

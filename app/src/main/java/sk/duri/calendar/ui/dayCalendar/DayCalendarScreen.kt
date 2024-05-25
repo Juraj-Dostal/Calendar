@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -17,14 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import sk.duri.calendar.R
 import sk.duri.calendar.data.TypUdalosti
 import sk.duri.calendar.data.Udalost
 import sk.duri.calendar.ui.navigation.NavigationDestination
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.util.Calendar
 
 object DayCalendarDestination : NavigationDestination {
     override val route = "dayCalendar"
@@ -33,12 +29,12 @@ object DayCalendarDestination : NavigationDestination {
 @Composable
 fun DayCalendarScreen() {
     Column (Modifier.verticalScroll(rememberScrollState())) {
-        Event(Udalost(1, "Skuska INF2", Date(2024,5,24), Date(2024,5,24), LocalTime.of(9,0), LocalTime.of(11,40), "Online", TypUdalosti.Udalost))
-        Event(Udalost(2, "Obhajoba AaUS1", Date(2024,5,27), Date(2024,5,27), LocalTime.of(9,0), LocalTime.of(11,40), "RB054", TypUdalosti.Udalost))
-        Event(Udalost(3, "Zapocet PaS", Date(2024,5,29), Date(2024,5,30), LocalTime.of(16,0), LocalTime.of(16,40), "RA323", TypUdalosti.Udalost))
-        Event(Udalost(4, "Skuska INF2", Date(2024,5,24), Date(2024,5,24), LocalTime.of(9,0), LocalTime.of(11,40), "Online", TypUdalosti.Udalost))
-        Event(Udalost(5, "Obhajoba AaUS1", Date(2024,5,27), Date(2024,5,27), LocalTime.of(9,0), LocalTime.of(11,40), "RB054", TypUdalosti.Udalost))
-        Event(Udalost(6, "Zapocet PaS", Date(2024,5,29), Date(2024,5,30), LocalTime.of(16,0), LocalTime.of(16,40), "RA323", TypUdalosti.Udalost))
+        Event(Udalost(1, "Skuska INF2", Calendar.getInstance().apply{set(2024,5,24,9,0)}, Calendar.getInstance().apply{set(2024,5,24,11,40)}, "Online", TypUdalosti.Udalost))
+        Event(Udalost(2, "Obhajoba AaUS1", Calendar.getInstance().apply{set(2024,5,31,8,0)}, Calendar.getInstance().apply{set(2024,5,31,8,15)},  "RB054", TypUdalosti.Udalost))
+        Event(Udalost(3, "Zapocet PaS", Calendar.getInstance().apply{set(2024,5,5,9,14)}, Calendar.getInstance().apply{set(2024,5,5,9,44)},  "RA323", TypUdalosti.Udalost))
+        Event(Udalost(4, "Skuska INF2", Calendar.getInstance().apply{set(2024,6,24,14,30)}, Calendar.getInstance().apply{set(2024,6,25,14,30)},  "Online", TypUdalosti.Udalost))
+        Event(Udalost(5, "Obhajoba AaUS1",  Calendar.getInstance().apply{set(2024,5,17,10,0)},  Calendar.getInstance().apply{set(2024,5,18,10,0)}, "RB054", TypUdalosti.Udalost))
+        Event(Udalost(6, "Zapocet PaS",  Calendar.getInstance().apply{set(2024,5,7,11,12)}, Calendar.getInstance().apply{set(2024,5,7,11,55)}, "RA323", TypUdalosti.Udalost))
 
     }
 }
@@ -78,12 +74,12 @@ fun Event(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "${event.dateFrom.date}.${event.dateFrom.month}.${event.dateFrom.year}",
+                    text = "${event.dateFrom.get(Calendar.DAY_OF_MONTH)}.${event.dateFrom.get(Calendar.MONTH)}.${event.dateFrom.get(Calendar.YEAR)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "${event.dateTo.day}.${event.dateTo.month}.${event.dateTo.date}",
+                    text = "${event.dateFrom.get(Calendar.DAY_OF_MONTH)}.${event.dateFrom.get(Calendar.MONTH)}.${event.dateFrom.get(Calendar.YEAR)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -91,17 +87,17 @@ fun Event(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = event.timeFrom.format(DateTimeFormatter.ofPattern("HH:mm")),
+                    text = "${event.dateFrom.get(Calendar.HOUR).toString()}:${event.dateFrom.get(Calendar.MINUTE)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = event.timeTo.format(DateTimeFormatter.ofPattern("HH:mm")),
+                    text = "${event.dateTo.get(Calendar.HOUR)}:${event.dateTo.get(Calendar.MINUTE)}",
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
             Text(
-                text = event.poznamka,
+                text = event.note,
                 style = MaterialTheme.typography.bodyLarge
             )
         }

@@ -1,10 +1,13 @@
 package sk.duri.calendar.data
 import kotlinx.coroutines.flow.Flow
+import java.util.Calendar
 import java.util.Date
 
 interface UdalostiRepository {
 
-    fun getUdalostiVDni(date: Date): Flow<List<Udalost>>
+    fun getUdalostiVDni(date: Calendar): Flow<List<Udalost>>
+
+    fun getUdalost(id: Int): Flow<Udalost?>
 
     fun getUdalosti(): Flow<List<Udalost>>
 
