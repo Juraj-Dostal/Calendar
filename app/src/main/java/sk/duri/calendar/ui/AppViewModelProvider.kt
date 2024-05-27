@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import sk.duri.calendar.ui.CreateEvent.CreateEventViewModel
+import sk.duri.calendar.ui.eventEntry.EventEntryViewModel
 import sk.duri.calendar.ui.dayCalendar.DayCalendarViewModel
 import sk.duri.calendar.ui.monthCalendar.MonthCalendarViewModel
 
@@ -28,6 +29,13 @@ object AppViewModelProvider {
                 udalostiApplication().container.udalostiRepository
             )
         }
+        // Initializer for EventEntryViewModel
+        initializer {
+            EventEntryViewModel(
+                udalostiApplication().container.udalostiRepository
+            )
+        }
+
 
     }
 }

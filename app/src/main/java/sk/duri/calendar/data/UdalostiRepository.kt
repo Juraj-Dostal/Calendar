@@ -5,7 +5,7 @@ import java.util.Date
 
 interface UdalostiRepository {
 
-    fun getUdalostiVDni(date: Calendar): Flow<List<Udalost>>
+    fun getUdalostiVDni(denOd: Int, mesiacOd: Int, rokOd: Int): Flow<List<Udalost>>
 
     fun getUdalost(id: Int): Flow<Udalost?>
 

@@ -1,13 +1,11 @@
 package sk.duri.calendar.data
 
 import kotlinx.coroutines.flow.Flow
-import java.util.Calendar
-import java.util.Date
 
 class OfflineUdalostiRepository(private val udalostDao: UdalostDao) : UdalostiRepository {
 
-    override fun getUdalostiVDni(date: Calendar): Flow<List<Udalost>> {
-        return udalostDao.getUdalostiVDni(date)
+    override fun getUdalostiVDni(denOd: Int, mesiacOd: Int, rokOd: Int): Flow<List<Udalost>> {
+        return udalostDao.getUdalostiVDni(denOd, mesiacOd, rokOd)
     }
 
     override fun getUdalost(id: Int): Flow<Udalost?> {

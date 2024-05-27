@@ -3,11 +3,9 @@ package sk.duri.calendar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -23,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import sk.duri.calendar.ui.CreateEvent.CreateEventDestination
+import sk.duri.calendar.ui.eventEntry.EventEntryDestination
 import sk.duri.calendar.ui.dayCalendar.DayCalendarDestination
 import sk.duri.calendar.ui.monthCalendar.MonthCalendarDestination
 import sk.duri.calendar.ui.navigation.CalendarNavHost
@@ -53,14 +51,14 @@ fun CalendarApp(navController: NavHostController = rememberNavController()) {
                         Icon(Icons.Filled.DateRange, contentDescription = "Change screen to MonthCalendar")
                     }
                     IconButton(onClick = { navController.navigate(DayCalendarDestination.route) }) {
-                        Icon(Icons.Filled.List, contentDescription = "Change screen to DayCalendar")
+                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Change screen to DayCalendar")
                     }
                 }
             )
         },
         floatingActionButton =  {
             FloatingActionButton(
-                onClick = { navController.navigate(CreateEventDestination.route) },
+                onClick = { navController.navigate(EventEntryDestination.route) },
             ) { Icon(Icons.Filled.Add, contentDescription = "Add") }
         }
     ){

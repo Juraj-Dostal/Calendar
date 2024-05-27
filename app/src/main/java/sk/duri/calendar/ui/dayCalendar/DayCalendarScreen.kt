@@ -29,12 +29,12 @@ object DayCalendarDestination : NavigationDestination {
 @Composable
 fun DayCalendarScreen() {
     Column (Modifier.verticalScroll(rememberScrollState())) {
-        Event(Udalost(1, "Skuska INF2", Calendar.getInstance().apply{set(2024,5,24,9,0)}, Calendar.getInstance().apply{set(2024,5,24,11,40)}, "Online", TypUdalosti.Udalost))
-        Event(Udalost(2, "Obhajoba AaUS1", Calendar.getInstance().apply{set(2024,5,31,8,0)}, Calendar.getInstance().apply{set(2024,5,31,8,15)},  "RB054", TypUdalosti.Udalost))
-        Event(Udalost(3, "Zapocet PaS", Calendar.getInstance().apply{set(2024,5,5,9,14)}, Calendar.getInstance().apply{set(2024,5,5,9,44)},  "RA323", TypUdalosti.Udalost))
-        Event(Udalost(4, "Skuska INF2", Calendar.getInstance().apply{set(2024,6,24,14,30)}, Calendar.getInstance().apply{set(2024,6,25,14,30)},  "Online", TypUdalosti.Udalost))
-        Event(Udalost(5, "Obhajoba AaUS1",  Calendar.getInstance().apply{set(2024,5,17,10,0)},  Calendar.getInstance().apply{set(2024,5,18,10,0)}, "RB054", TypUdalosti.Udalost))
-        Event(Udalost(6, "Zapocet PaS",  Calendar.getInstance().apply{set(2024,5,7,11,12)}, Calendar.getInstance().apply{set(2024,5,7,11,55)}, "RA323", TypUdalosti.Udalost))
+        Event(Udalost(1, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024, "Online", TypUdalosti.Udalost))
+        Event(Udalost(2, "Obhajoba AaUS1",0, 8,31,5,2024,30, 9,31,5,2024, "RB054", TypUdalosti.Udalost))
+        Event(Udalost(3, "Zapocet PaS",0,9, 24, 5, 2024,11,40,24,5,2024,  "RA323", TypUdalosti.Udalost))
+        Event(Udalost(4, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024,"Online", TypUdalosti.Udalost))
+        Event(Udalost(5, "Obhajoba AaUS1",  0,9, 24, 5, 2024,11,40,24,5,2024, "RB054", TypUdalosti.Udalost))
+        Event(Udalost(6, "Zapocet PaS",  12,11,7,5,2024, 55,11,11,7,2024, "RA323", TypUdalosti.Udalost))
 
     }
 }
@@ -54,7 +54,7 @@ fun Event(
             modifier = Modifier.padding(20.dp),
         ) {
             Text(
-            text = event.name,
+            text = event.nazov,
             style = MaterialTheme.typography.titleLarge
             )
             Row(
@@ -74,12 +74,12 @@ fun Event(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "${event.dateFrom.get(Calendar.DAY_OF_MONTH)}.${event.dateFrom.get(Calendar.MONTH)}.${event.dateFrom.get(Calendar.YEAR)}",
+                    text = "${event.odDen}.${event.odMesiac}.${event.odRok}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "${event.dateFrom.get(Calendar.DAY_OF_MONTH)}.${event.dateFrom.get(Calendar.MONTH)}.${event.dateFrom.get(Calendar.YEAR)}",
+                    text = "${event.doDen}.${event.doMesiac}.${event.doRok}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -87,17 +87,17 @@ fun Event(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "${event.dateFrom.get(Calendar.HOUR).toString()}:${event.dateFrom.get(Calendar.MINUTE)}",
+                    text = "${event.odHodina}:${event.odMinuta}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "${event.dateTo.get(Calendar.HOUR)}:${event.dateTo.get(Calendar.MINUTE)}",
+                    text = "${event.doHodina}:${event.doMinuta}",
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
             Text(
-                text = event.note,
+                text = event.poznamka,
                 style = MaterialTheme.typography.bodyLarge
             )
         }
