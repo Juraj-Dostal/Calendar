@@ -1,4 +1,4 @@
-package sk.duri.calendar.ui
+package sk.duri.calendar
 
 import android.app.Application
 import sk.duri.calendar.data.AppContainer

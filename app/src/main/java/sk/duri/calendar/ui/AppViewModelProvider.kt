@@ -1,11 +1,11 @@
 package sk.duri.calendar.ui
 
-import android.app.Application
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import sk.duri.calendar.UdalostiApplication
 import sk.duri.calendar.ui.CreateEvent.CreateEventViewModel
 import sk.duri.calendar.ui.eventEntry.EventEntryViewModel
 import sk.duri.calendar.ui.dayCalendar.DayCalendarViewModel
@@ -31,18 +31,12 @@ object AppViewModelProvider {
         }
         // Initializer for EventEntryViewModel
         initializer {
-            EventEntryViewModel(
-                udalostiApplication().container.udalostiRepository
-            )
+            EventEntryViewModel(udalostiApplication().container.udalostiRepository)
         }
 
 
     }
 }
 
-/**
- * Extension function to queries for [Application] object and returns an instance of
- * [InventoryApplication].
- */
 fun CreationExtras.udalostiApplication(): UdalostiApplication =
-    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as UdalostiApplication)
+    (this[AndroidViewModelFactory.APPLICATION_KEY] as UdalostiApplication)

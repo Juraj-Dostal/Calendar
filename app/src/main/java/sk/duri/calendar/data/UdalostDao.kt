@@ -20,11 +20,11 @@ interface UdalostDao {
     @Delete
     suspend fun deleteUdalost(udalost: Udalost)
 
-    @Query("SELECT * FROM udalost WHERE odDen = :denOd AND odMesiac = :mesiacOd AND odRok = :rokOd")
+    @Query("SELECT * FROM udalosti WHERE odDen = :denOd AND odMesiac = :mesiacOd AND odRok = :rokOd")
     fun getUdalostiVDni(denOd: Int, mesiacOd: Int, rokOd: Int): Flow<List<Udalost>>
 
-    @Query("SELECT * FROM udalost")
+    @Query("SELECT * FROM udalosti")
     fun getUdalosti(): Flow<List<Udalost>>
-    @Query("SELECT * FROM udalost WHERE id = :id")
+    @Query("SELECT * FROM udalosti WHERE id = :id")
     fun getUdalost(id: Int): Flow<Udalost?>
 }

@@ -1,7 +1,5 @@
 package sk.duri.calendar.data
 import kotlinx.coroutines.flow.Flow
-import java.util.Calendar
-import java.util.Date
 
 interface UdalostiRepository {
 

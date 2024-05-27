@@ -26,13 +26,20 @@ fun CalendarNavHost(
         modifier = modifier
     ) {
         composable(route=MonthCalendarDestination.route) {
-            MonthCalendarScreen(modifier = modifier)
+            MonthCalendarScreen(
+                navigateToDayCalendar = { navController.navigate(DayCalendarDestination.route) },
+                navigateToEventEntry = { navController.navigate(EventEntryDestination.route) },
+                modifier = modifier
+            )
         }
         composable(route= DayCalendarDestination.route) {
-            DayCalendarScreen()
+            DayCalendarScreen(
+                navigateToEventEntry = { navController.navigate(EventEntryDestination.route) },
+                navigateToMonthCalendar = { navController.navigate(MonthCalendarDestination.route) }
+            )
         }
-        composable(route =CreateEventDestination.route){
-            CreateEventScreen(navigateBack =  { /*TODO*/  })
+        composable(route = CreateEventDestination.route){
+            CreateEventScreen(navigateBack =  { navController.popBackStack()  })
         }
         composable(route = EventEntryDestination.route){
             EventEntryScreen(

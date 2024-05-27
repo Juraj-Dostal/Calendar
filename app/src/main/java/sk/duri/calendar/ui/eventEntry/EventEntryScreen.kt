@@ -11,12 +11,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,40 +44,77 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.compose.CalendarTheme
 import kotlinx.coroutines.launch
 import sk.duri.calendar.R
 import sk.duri.calendar.data.TypUdalosti
 import sk.duri.calendar.ui.AppViewModelProvider
+import sk.duri.calendar.ui.dayCalendar.DayCalendarDestination
 import sk.duri.calendar.ui.eventEntry.EventEntryViewModel
+import sk.duri.calendar.ui.monthCalendar.MonthCalendarDestination
+import sk.duri.calendar.ui.navigation.CalendarNavHost
 import sk.duri.calendar.ui.navigation.NavigationDestination
 
 object EventEntryDestination : NavigationDestination {
     override val route = "eventEntry"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventEntryScreen(
     navigateBack: () -> Unit,
-    //viewModel: EventEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: EventEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val corutineScope = rememberCoroutineScope()
 
-    EventEntryBody(
-        //udalostUiState = viewModel.udalostUiState,
-        onUdalostValueChange = {/**/},//viewModel::updateUiState,
-        navigateBack = navigateBack,
-        onSaveClick = {
-            /*corutineScope.launch {
-                viewModel.saveUdalost()
-                navigateBack()
-            }*/
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text("Calendar")
+                },
+                navigationIcon = {
+                    IconButton(onClick = {  }) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = navigateBack) {
+                        Icon(Icons.Filled.DateRange, contentDescription = "Change screen to MonthCalendar")
+                    }
+                }
+            )
+        },
+    ){
+            innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+        ) {
+            EventEntryBody(
+                udalostDetails = viewModel.udalostUiState.udalostDetails,
+                onUdalostValueChange = viewModel::updateUiState,
+                navigateBack = navigateBack,
+                onSaveClick = {
+                    corutineScope.launch {
+                        viewModel.saveUdalost()
+                        navigateBack()
+                    }
+                }
+            )
         }
-    )
+    }
+
+
 }
 
 @Composable
 fun EventEntryBody(
-    //udalostUiState: UdalostUiState,
+    udalostDetails: UdalostDetails,
     onUdalostValueChange: (UdalostDetails) -> Unit,
     navigateBack: () -> Unit,
     onSaveClick: () -> Unit,
@@ -77,8 +126,8 @@ fun EventEntryBody(
 
     Column {
         OutlinedTextField(
-            value = nazov,
-            onValueChange = {nazov = it},
+            value = udalostDetails.nazov,
+            onValueChange = { onUdalostValueChange( udalostDetails.copy(nazov = it) )},
             label = { Text(text = stringResource(R.string.nameEvent)) },
             modifier = modifier.align(Alignment.CenterHorizontally),
             )
@@ -272,5 +321,11 @@ fun DateInput(
 @Preview(showBackground = true)
 @Composable
 fun EventEntryScreenPreview() {
-    EventEntryScreen(navigateBack = {})
+    CalendarTheme {
+        EventEntryBody(
+            udalostDetails = UdalostDetails(1, "Event", 0, 13, 1, 1, 2022, 30, 13, 1, 1, 2022, "Note", TypUdalosti.Udalost),
+            onUdalostValueChange = { /*TODO*/ },
+            navigateBack = { /*TODO*/ },
+            onSaveClick = { /*TODO*/ })
+    }
 }

@@ -16,6 +16,7 @@ abstract class CalendarDatabase : RoomDatabase(){
         fun getDatabase(content: Context): CalendarDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(content, CalendarDatabase::class.java, "calendar_database")
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }

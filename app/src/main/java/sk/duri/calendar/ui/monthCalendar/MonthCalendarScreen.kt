@@ -2,6 +2,7 @@ package sk.duri.calendar.ui.monthCalendar
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +12,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -32,25 +42,63 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import sk.duri.calendar.R
 import sk.duri.calendar.ui.AppViewModelProvider
+import sk.duri.calendar.ui.dayCalendar.DayCalendarDestination
+import sk.duri.calendar.ui.eventEntry.EventEntryDestination
+import sk.duri.calendar.ui.navigation.CalendarNavHost
 import sk.duri.calendar.ui.navigation.NavigationDestination
 
 object MonthCalendarDestination : NavigationDestination {
     override val route = "monthCalendar"
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MonthCalendarScreen(
+    navigateToDayCalendar: () -> Unit,
+    navigateToEventEntry: () -> Unit,
     viewModel: MonthCalendarViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier
 ) {
     val daysUiState = viewModel.daysUiState.collectAsState()
     val days = daysUiState.value.days
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        MonthPicker(viewModel)
-        Calendar(days)
-        DayEvents(/*udalosti = List<Udalosti>*/)
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text("Calendar")
+                },
+                navigationIcon = {
+                    IconButton(onClick = {  }) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Settings")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = navigateToDayCalendar ) {
+                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Change screen to DayCalendar")
+                    }
+                }
+            )
+        },
+        floatingActionButton =  {
+            FloatingActionButton(
+                onClick = navigateToEventEntry,
+            ) { Icon(Icons.Filled.Add, contentDescription = "Add") }
+        }
+    ){  innerPadding ->
+        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            MonthPicker(viewModel)
+            Calendar(days)
+            DayEvents(/*udalosti = List<Udalosti>*/)
+        }
     }
+
+
+
 }
 
 @Composable
@@ -139,6 +187,7 @@ fun DayItem(
         maxLines = 1,
         textAlign = TextAlign.Center,
         modifier = modifier.padding(10.dp)
+            .clickable(onClick = {  })
     )
 }
 
@@ -202,7 +251,10 @@ fun DayEvents(
 @Preview(showBackground = true)
 @Composable
 fun MonthCalendarScreenPreview() {
-    MonthCalendarScreen(modifier = Modifier)
+    MonthCalendarScreen(
+        navigateToDayCalendar = {},
+        navigateToEventEntry = {}
+    )
 }
 
 @Composable

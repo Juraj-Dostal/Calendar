@@ -4,17 +4,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import sk.duri.calendar.data.CalendarDatabase
+import sk.duri.calendar.data.OfflineUdalostiRepository
 import sk.duri.calendar.data.TypUdalosti
 import sk.duri.calendar.data.Udalost
 import sk.duri.calendar.data.UdalostiRepository
 
-class EventEntryViewModel(private val udalostiRepository: UdalostiRepository)  : ViewModel() {
+class EventEntryViewModel(private val udalostiRepository: UdalostiRepository )  : ViewModel() {
 
     var udalostUiState by mutableStateOf(UdalostUiState())
         private set
 
     fun updateUiState(udalostDetails: UdalostDetails) {
-        udalostUiState = UdalostUiState(udalostDetails = udalostDetails)
+        udalostUiState = UdalostUiState(udalostDetails = udalostDetails, isEntryValid = validateInput(udalostDetails))
     }
 
     private fun validateInput(uiState: UdalostDetails = udalostUiState.udalostDetails): Boolean {

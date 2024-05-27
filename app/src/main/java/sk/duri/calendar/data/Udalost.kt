@@ -1,11 +1,9 @@
 package sk.duri.calendar.data
 
-import androidx.compose.ui.res.stringResource
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import sk.duri.calendar.R
 
-@Entity(tableName = "udalost")
+@Entity(tableName = "udalosti")
 data class Udalost(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val nazov: String,
