@@ -1,7 +1,7 @@
 package sk.duri.calendar.ui.monthCalendar
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,17 +9,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,21 +32,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
 import sk.duri.calendar.R
+import sk.duri.calendar.data.Udalost
 import sk.duri.calendar.ui.AppViewModelProvider
-import sk.duri.calendar.ui.dayCalendar.DayCalendarDestination
-import sk.duri.calendar.ui.eventEntry.EventEntryDestination
-import sk.duri.calendar.ui.navigation.CalendarNavHost
+import sk.duri.calendar.ui.dayCalendar.Event
 import sk.duri.calendar.ui.navigation.NavigationDestination
 
 object MonthCalendarDestination : NavigationDestination {
@@ -61,6 +61,7 @@ fun MonthCalendarScreen(
 ) {
     val daysUiState = viewModel.daysUiState.collectAsState()
     val days = daysUiState.value.days
+    var eventsDayUiState = viewModel.eventsDayUiState.collectAsState()
 
     Scaffold (
         topBar = {
@@ -90,10 +91,21 @@ fun MonthCalendarScreen(
             ) { Icon(Icons.Filled.Add, contentDescription = "Add") }
         }
     ){  innerPadding ->
-        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(innerPadding)
+            .verticalScroll(rememberScrollState())
+        ) {
             MonthPicker(viewModel)
-            Calendar(days)
-            DayEvents(/*udalosti = List<Udalosti>*/)
+            Calendar(
+                days,
+                viewModel,
+                modifier = Modifier
+                    .padding(3.dp)
+            )
+            DayEvents(
+                udalosti = eventsDayUiState.value.udalostiDni,
+            )
         }
     }
 
@@ -141,7 +153,8 @@ fun MonthPicker(
 
 @Composable
 fun Calendar(
-    days: List<Int>,
+    days: List<Day>,
+    viewModel: MonthCalendarViewModel,
     modifier: Modifier = Modifier
 ) {
     val nameOfDayOfWeek = LocalContext.current.resources.getStringArray(R.array.days_in_week)
@@ -165,35 +178,67 @@ fun Calendar(
             Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 for (j in 1..7) {
                     DayItem(
-                        numberOfDay = days[(i - 1) * 7 + j - 1],
+                        days[(i - 1) * 7 + j - 1],
+                        viewModel,
                         modifier = Modifier
                             .weight(1f)
                     )
                 }
             }
+            HorizontalDivider(
+                    color = MaterialTheme.colorScheme.primary,
+            )
         }
     }
 }
 
 @Composable
 fun DayItem(
-    numberOfDay: Int,
+    day: Day,
+    viewModel: MonthCalendarViewModel,
     modifier: Modifier = Modifier
 ) {
+    val isActualMonth = viewModel.calendarUiState.collectAsState().value.month == day.month
+    val isSelected = viewModel.selectedDay.collectAsState().value == day
+    val backgroundColor = if (isSelected && isActualMonth) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+
+    val textColor = if (isSelected && isActualMonth)
+        MaterialTheme.colorScheme.onPrimary //else MaterialTheme.colorScheme.onBackground
+    else if (isActualMonth) MaterialTheme.colorScheme.onBackground
+    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+
+    val isActualDay = viewModel.actualDay.collectAsState().value == day
+    val widthBorder = if (isActualDay) 2.dp else 0.dp
+    val borderColor = if (isActualDay) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+
     Text(
-        text = numberOfDay.toString(),
+        text = day.day.toString(),
         fontSize = 20.sp,
-        style = TextStyle(color = MaterialTheme.colorScheme.onBackground),
+        style = TextStyle(color = textColor),
         maxLines = 1,
         textAlign = TextAlign.Center,
-        modifier = modifier.padding(10.dp)
-            .clickable(onClick = {  })
+        modifier = modifier
+            .size(48.dp)
+            .clip(RectangleShape)
+            .clip(MaterialTheme.shapes.large)
+            .border(
+                width = widthBorder,
+                color = borderColor,
+                shape = MaterialTheme.shapes.large
+            )
+            .background(backgroundColor)
+            .padding(10.dp)
+            .clickable(onClick = {
+                viewModel.selectedDay.value = day
+                viewModel.getEventsInDay(day)
+            })
+
     )
 }
 
 @Composable
 fun DayEvents(
-    //udalosti: List<Udalosti>,
+    udalosti: List<Udalost>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -217,14 +262,7 @@ fun DayEvents(
             )
         }
 
-        Text(
-            text = "No events",
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            style = TextStyle(color = MaterialTheme.colorScheme.onBackground)
-        )
-
-        /*if (udalosti.isEmpty()) {
+        if (udalosti.isEmpty()) {
             Text(
                 text = "No events",
                 textAlign = TextAlign.Center,
@@ -232,19 +270,11 @@ fun DayEvents(
                 style = TextStyle(color = MaterialTheme.colorScheme.onBackground)
             )
         }
-        else{
+        else {
             udalosti.forEach {
-                Text(
-                    text = it.name,
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
-                    style = TextStyle(color = MaterialTheme.colorScheme.onBackground)
-                )
+                Event(it)
             }
-
-        }*/
-
-
+        }
     }
 }
 

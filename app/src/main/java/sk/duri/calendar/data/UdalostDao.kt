@@ -23,7 +23,7 @@ interface UdalostDao {
     @Query("SELECT * FROM udalosti WHERE odDen = :denOd AND odMesiac = :mesiacOd AND odRok = :rokOd")
     fun getUdalostiVDni(denOd: Int, mesiacOd: Int, rokOd: Int): Flow<List<Udalost>>
 
-    @Query("SELECT * FROM udalosti")
+    @Query("SELECT * FROM udalosti ORDER BY odRok, odMesiac, odDen ASC")
     fun getUdalosti(): Flow<List<Udalost>>
     @Query("SELECT * FROM udalosti WHERE id = :id")
     fun getUdalost(id: Int): Flow<Udalost?>

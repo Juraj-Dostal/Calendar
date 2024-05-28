@@ -1,20 +1,18 @@
 package sk.duri.calendar.ui.monthCalendar
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import sk.duri.calendar.R
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import sk.duri.calendar.data.Udalost
+import sk.duri.calendar.data.UdalostiRepository
 
 
-class MonthCalendarViewModel() : ViewModel(){
+class MonthCalendarViewModel(val udalostiRepository: UdalostiRepository ) : ViewModel(){
     private val calendar = java.util.Calendar.getInstance()
 
     private val _calendarUiState = MutableStateFlow(CalendarUiState())
@@ -23,16 +21,35 @@ class MonthCalendarViewModel() : ViewModel(){
     private val _daysUiState = MutableStateFlow(DaysUiState())
     val daysUiState: StateFlow<DaysUiState> = _daysUiState.asStateFlow()
 
+    var selectedDay = MutableStateFlow(
+        Day(this.calendar.get(java.util.Calendar.DAY_OF_MONTH),
+            this.calendar.get(java.util.Calendar.MONTH),
+            this.calendar.get(java.util.Calendar.YEAR)))
+    val actualDay = MutableStateFlow(
+        Day(this.calendar.get(java.util.Calendar.DAY_OF_MONTH),
+            this.calendar.get(java.util.Calendar.MONTH),
+            this.calendar.get(java.util.Calendar.YEAR)))
+
+    var eventsDayUiState: StateFlow<EventsDayUiState> = MutableStateFlow(EventsDayUiState()).asStateFlow()
+        /*udalostiRepository.getUdalostiVDni(selectedDay.value.day, selectedDay.value.month + 1, selectedDay.value.year)
+            .map{EventsDayUiState(it)}
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000L),
+                initialValue = EventsDayUiState()
+            )*/
 
     init {
         _calendarUiState.value = CalendarUiState(
             this.calendar.get(java.util.Calendar.MONTH),
             this.calendar.get(java.util.Calendar.YEAR)
         )
+
         setInitialDays()
+        getEventsInDay()
     }
 
-    public fun setDate(addMonth: Int) {
+     fun setDate(addMonth: Int) {
         var year: Int = this._calendarUiState.value.year
         var month: Int = this._calendarUiState.value.month
 
@@ -51,9 +68,9 @@ class MonthCalendarViewModel() : ViewModel(){
     }
 
     private fun setInitialDays() {
-        var year: Int = this._calendarUiState.value.year
-        var month: Int = this._calendarUiState.value.month
-        val days = mutableListOf<Int>()
+        val year: Int = this._calendarUiState.value.year
+        val month: Int = this._calendarUiState.value.month
+        val days = mutableListOf<Day>()
         var pocitadlo = 1
 
         this.calendar.set(year, month, 1)
@@ -64,42 +81,41 @@ class MonthCalendarViewModel() : ViewModel(){
         val lastDayOfPrevMonth = this.calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)
 
         for (i in 1..firstDayInWeek - 2) {
-            days.add(lastDayOfPrevMonth - (firstDayInWeek -2) + i)
+            if (month == 0)
+                days.add(Day(lastDayOfPrevMonth - (firstDayInWeek -2) + i, 11, year - 1))
+            else
+                days.add(Day(lastDayOfPrevMonth - (firstDayInWeek -2) + i, month - 1, year))
+
             pocitadlo++
         }
 
-        days.addAll(1..28)
+        days.addAll((1..lastDayOfMonth).map{ Day(it, month, year) })
         pocitadlo += 28
 
-        for (i in 29..lastDayOfMonth) {
-            days.add(i)
-            pocitadlo++
-        }
-        for (i in 1..43 - pocitadlo) {
-            days.add(i)
-        }
+        if (month == 11)
+            days.addAll((1..43 - pocitadlo).map{ Day(it, month + 1, year) })
+        else
+            days.addAll((1..43 - pocitadlo).map{ Day(it, month + 1, year) })
 
         _daysUiState.value = DaysUiState(days)
     }
 
-    /*private fun getMonthName(): String {
-        return when (11) {
-            0 -> "January"
-            1 -> "February"
-            2 -> "March"
-            3 -> "April"
-            4 -> "May"
-            5 -> "June"
-            6 -> "July"
-            7 -> "August"
-            8 -> "September"
-            9 -> "October"
-            10 -> "November"
-            11 -> "December"
-            else -> ""
-        }
-    }*/
+    fun getEventsInDay(day: Day = selectedDay.value) {
+        eventsDayUiState = udalostiRepository
+            .getUdalostiVDni(day.day, day.month + 1, day.year)
+            .map { EventsDayUiState(it)}
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000L),
+                initialValue = EventsDayUiState()
+            )
+    }
 }
+
+
+data class EventsDayUiState(
+    var udalostiDni: List<Udalost> = listOf()
+)
 
 data class CalendarUiState(
     var month: Int = 0,
@@ -107,5 +123,11 @@ data class CalendarUiState(
 )
 
 data class DaysUiState(
-    val days: List<Int> = listOf()
+    val days: List<Day> = listOf()
+)
+
+data class Day(
+    val day: Int,
+    val month: Int,
+    val year: Int,
 )
