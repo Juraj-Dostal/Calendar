@@ -84,6 +84,7 @@ fun DayCalendarScreen(
                 .padding(innerPadding)
         ) {
             Column (Modifier.verticalScroll(rememberScrollState())) {
+                DayHeader(24, 5, 2024)
                 Event(Udalost(1, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024, "Online", TypUdalosti.Udalost))
                 Event(Udalost(2, "Obhajoba AaUS1",0, 8,31,5,2024,30, 9,31,5,2024, "RB054", TypUdalosti.Udalost))
                 Event(Udalost(3, "Zapocet PaS",0,9, 24, 5, 2024,11,40,24,5,2024,  "RA323", TypUdalosti.Udalost))
@@ -164,6 +165,31 @@ fun Event(
     }
 }
 
+@Composable
+fun DayHeader(
+    day: Int,
+    month: Int,
+    year: Int,
+    modifier: Modifier = Modifier
+){
+    Card(
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primaryContainer),
+        modifier = modifier
+            .padding(5.dp)
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+        ) {
+            Text(
+                text = "$day.$month.$year",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+        }
+    }
+}
 
 @Preview( showBackground = true)
 @Composable

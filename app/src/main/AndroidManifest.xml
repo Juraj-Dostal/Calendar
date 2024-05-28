@@ -11,6 +11,7 @@
         android:roundIcon="@drawable/calendar"
         android:supportsRtl="true"
         android:theme="@style/Theme.Calendar"
+        android:name=".UdalostiApplication"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
