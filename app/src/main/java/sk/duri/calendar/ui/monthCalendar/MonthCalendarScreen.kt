@@ -1,5 +1,6 @@
 package sk.duri.calendar.ui.monthCalendar
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -18,6 +21,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -33,16 +38,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import sk.duri.calendar.R
-import sk.duri.calendar.data.Udalost
 import sk.duri.calendar.ui.AppViewModelProvider
 import sk.duri.calendar.ui.dayCalendar.Event
 import sk.duri.calendar.ui.navigation.NavigationDestination
@@ -61,7 +70,6 @@ fun MonthCalendarScreen(
 ) {
     val daysUiState = viewModel.daysUiState.collectAsState()
     val days = daysUiState.value.days
-    var eventsDayUiState = viewModel.eventsDayUiState.collectAsState()
 
     Scaffold (
         topBar = {
@@ -104,7 +112,9 @@ fun MonthCalendarScreen(
                     .padding(3.dp)
             )
             DayEvents(
-                udalosti = eventsDayUiState.value.udalostiDni,
+                viewModel,
+                modifier = Modifier
+                    .padding(top = 5.dp)
             )
         }
     }
@@ -208,6 +218,7 @@ fun DayItem(
     else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
 
     val isActualDay = viewModel.actualDay.collectAsState().value == day
+
     val widthBorder = if (isActualDay) 2.dp else 0.dp
     val borderColor = if (isActualDay) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
 
@@ -217,6 +228,7 @@ fun DayItem(
         style = TextStyle(color = textColor),
         maxLines = 1,
         textAlign = TextAlign.Center,
+        fontWeight = FontWeight.Bold,
         modifier = modifier
             .size(48.dp)
             .clip(RectangleShape)
@@ -238,9 +250,12 @@ fun DayItem(
 
 @Composable
 fun DayEvents(
-    udalosti: List<Udalost>,
+    viewModel: MonthCalendarViewModel,
     modifier: Modifier = Modifier
 ) {
+    val eventsDayUiState = viewModel.eventsDayUiState.collectAsState()
+    val selectedDay = viewModel.selectedDay.collectAsState().value
+
     Column(
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -248,30 +263,61 @@ fun DayEvents(
     ) {
         Row(
             modifier = modifier
+                .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
                 .background(MaterialTheme.colorScheme.primary)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(10.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Events",
+                text = "${selectedDay.day}.${selectedDay.month + 1}.${selectedDay.year}",
                 textAlign = TextAlign.Center,
-                fontSize = 20.sp,
+                fontSize = 25.sp,
                 style = TextStyle(
                     color = MaterialTheme.colorScheme.onPrimary,
-                ),
+                )
             )
         }
 
-        if (udalosti.isEmpty()) {
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(5.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        ) {
+            Row {
+                Image(
+                    painter = painterResource(R.drawable.celebration_24dp_fill0_wght400_grad0_opsz24),
+                    contentDescription = "Celebration",
+                    colorFilter = ColorFilter.tint(Color.Black),
+                    modifier = Modifier
+                        .size(50.dp)// Change the color to black
+                )
+                Text(
+                    text = selectedDay.name_Day,
+                    textAlign = TextAlign.Center,
+                    fontSize = 30.sp,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentSize(align = Alignment.Center)
+                        .align(Alignment.CenterVertically),
+                )
+
+            }
+        }
+
+        if (eventsDayUiState.value.udalostiDni.isEmpty()) {
             Text(
-                text = "No events",
+                text = stringResource(R.string.NoEventToday),
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp,
-                style = TextStyle(color = MaterialTheme.colorScheme.onBackground)
+                style = TextStyle(color = MaterialTheme.colorScheme.onBackground),
+                modifier = modifier
+                    .padding(20.dp)
             )
         }
         else {
-            udalosti.forEach {
+            eventsDayUiState.value.udalostiDni.forEach {
                 Event(it)
             }
         }

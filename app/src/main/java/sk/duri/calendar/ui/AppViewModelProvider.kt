@@ -13,7 +13,7 @@ object AppViewModelProvider {
     val Factory = viewModelFactory {
         // Initializer for MonthCalendarViewModel
         initializer {
-            MonthCalendarViewModel(udalostiApplication().container.udalostiRepository)
+            MonthCalendarViewModel(udalostiApplication() ,udalostiApplication().container.udalostiRepository)
         }
         // Initializer for DayCalendarViewModel
         initializer {

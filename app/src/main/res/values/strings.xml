@@ -26,4 +26,5 @@
     <string name="year">YYYY</string>
     <string name="date">Date</string>
     <string name="time">Time</string>
+    <string name="NoEventToday">No events today</string>
 </resources>

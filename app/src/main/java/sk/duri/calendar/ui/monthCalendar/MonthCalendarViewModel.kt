@@ -1,18 +1,24 @@
 package sk.duri.calendar.ui.monthCalendar
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import org.json.JSONObject
 import sk.duri.calendar.data.Udalost
 import sk.duri.calendar.data.UdalostiRepository
 
 
-class MonthCalendarViewModel(val udalostiRepository: UdalostiRepository ) : ViewModel(){
+class MonthCalendarViewModel(application: Application, val udalostiRepository: UdalostiRepository ) : ViewModel(){
+    private val assetManager = application.assets
+    private val inputStream = assetManager.open("slovak-name-day.json")
+    val nameDayJson = JSONObject(inputStream.bufferedReader().use { it.readText() })
+
+
+
     private val calendar = java.util.Calendar.getInstance()
 
     private val _calendarUiState = MutableStateFlow(CalendarUiState())
@@ -24,20 +30,24 @@ class MonthCalendarViewModel(val udalostiRepository: UdalostiRepository ) : View
     var selectedDay = MutableStateFlow(
         Day(this.calendar.get(java.util.Calendar.DAY_OF_MONTH),
             this.calendar.get(java.util.Calendar.MONTH),
-            this.calendar.get(java.util.Calendar.YEAR)))
+            this.calendar.get(java.util.Calendar.YEAR),
+            nameDayJson
+                .getJSONObject(this.calendar.get(java.util.Calendar.MONTH).toString())
+                .getString(this.calendar.get(java.util.Calendar.DAY_OF_MONTH).toString()) ?: ""
+        )
+    )
     val actualDay = MutableStateFlow(
         Day(this.calendar.get(java.util.Calendar.DAY_OF_MONTH),
             this.calendar.get(java.util.Calendar.MONTH),
-            this.calendar.get(java.util.Calendar.YEAR)))
+            this.calendar.get(java.util.Calendar.YEAR),
+            nameDayJson
+                .getJSONObject(this.calendar.get(java.util.Calendar.MONTH).toString())
+                .getString(this.calendar.get(java.util.Calendar.DAY_OF_MONTH).toString()) ?: ""
+        )
+    )
 
-    var eventsDayUiState: StateFlow<EventsDayUiState> = MutableStateFlow(EventsDayUiState()).asStateFlow()
-        /*udalostiRepository.getUdalostiVDni(selectedDay.value.day, selectedDay.value.month + 1, selectedDay.value.year)
-            .map{EventsDayUiState(it)}
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000L),
-                initialValue = EventsDayUiState()
-            )*/
+    var eventsDayUiState: MutableStateFlow<EventsDayUiState> = MutableStateFlow(EventsDayUiState())
+
 
     init {
         _calendarUiState.value = CalendarUiState(
@@ -70,6 +80,9 @@ class MonthCalendarViewModel(val udalostiRepository: UdalostiRepository ) : View
     private fun setInitialDays() {
         val year: Int = this._calendarUiState.value.year
         val month: Int = this._calendarUiState.value.month
+        val monthJson = nameDayJson.getJSONObject(month.toString())
+        val monthJsonNext = if (month == 11) nameDayJson.getJSONObject("0") else nameDayJson.getJSONObject((month + 1).toString())
+        val monthJsonPrev = if (month == 0) nameDayJson.getJSONObject("11") else  nameDayJson.getJSONObject((month - 1).toString())
         val days = mutableListOf<Day>()
         var pocitadlo = 1
 
@@ -81,34 +94,34 @@ class MonthCalendarViewModel(val udalostiRepository: UdalostiRepository ) : View
         val lastDayOfPrevMonth = this.calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH)
 
         for (i in 1..firstDayInWeek - 2) {
+            val hodnota =lastDayOfPrevMonth - (firstDayInWeek -2) + i
             if (month == 0)
-                days.add(Day(lastDayOfPrevMonth - (firstDayInWeek -2) + i, 11, year - 1))
+                days.add(Day(hodnota, 11, year - 1, monthJsonPrev.getString(hodnota.toString()) ?: "" ))
             else
-                days.add(Day(lastDayOfPrevMonth - (firstDayInWeek -2) + i, month - 1, year))
+                days.add(Day(hodnota, month - 1, year, monthJsonPrev.getString(hodnota.toString()) ?: "" ))
 
             pocitadlo++
         }
 
-        days.addAll((1..lastDayOfMonth).map{ Day(it, month, year) })
+        days.addAll((1..lastDayOfMonth).map{ Day(it, month, year, monthJson.getString(it.toString()) ?: "" ) })
         pocitadlo += 28
 
         if (month == 11)
-            days.addAll((1..43 - pocitadlo).map{ Day(it, month + 1, year) })
+            days.addAll((1..43 - pocitadlo).map{ Day(it, 0, year + 1, monthJsonNext.getString(it.toString()) ?: "" ) })
         else
-            days.addAll((1..43 - pocitadlo).map{ Day(it, month + 1, year) })
+            days.addAll((1..43 - pocitadlo).map{ Day(it, month + 1, year, monthJsonNext.getString(it.toString()) ?: "" ) })
 
         _daysUiState.value = DaysUiState(days)
     }
 
     fun getEventsInDay(day: Day = selectedDay.value) {
-        eventsDayUiState = udalostiRepository
-            .getUdalostiVDni(day.day, day.month + 1, day.year)
-            .map { EventsDayUiState(it)}
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000L),
-                initialValue = EventsDayUiState()
-            )
+
+        viewModelScope.launch {
+            udalostiRepository.getUdalostiVDni(day.day, day.month + 1, day.year).collect{
+                eventsDayUiState.value = EventsDayUiState(it)
+            }
+        }
+
     }
 }
 
@@ -130,4 +143,5 @@ data class Day(
     val day: Int,
     val month: Int,
     val year: Int,
+    val name_Day: String,
 )
