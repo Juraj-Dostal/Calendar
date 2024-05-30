@@ -280,30 +280,32 @@ fun DayEvents(
             )
         }
 
-        Card(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-        ) {
-            Row {
-                Image(
-                    painter = painterResource(R.drawable.celebration_24dp_fill0_wght400_grad0_opsz24),
-                    contentDescription = "Celebration",
-                    colorFilter = ColorFilter.tint(Color.Black),
-                    modifier = Modifier
-                        .size(50.dp)// Change the color to black
-                )
-                Text(
-                    text = selectedDay.name_Day,
-                    textAlign = TextAlign.Center,
-                    fontSize = 30.sp,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentSize(align = Alignment.Center)
-                        .align(Alignment.CenterVertically),
-                )
+        if (selectedDay.nameDay.isNotBlank()) {
+            Card(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Row {
+                    Image(
+                        painter = painterResource(R.drawable.celebration_24dp_fill0_wght400_grad0_opsz24),
+                        contentDescription = "Celebration",
+                        colorFilter = ColorFilter.tint(Color.Black),
+                        modifier = Modifier
+                            .size(50.dp)// Change the color to black
+                    )
+                    Text(
+                        text = selectedDay.nameDay,
+                        textAlign = TextAlign.Center,
+                        fontSize = 30.sp,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(align = Alignment.Center)
+                            .align(Alignment.CenterVertically),
+                    )
 
+                }
             }
         }
 

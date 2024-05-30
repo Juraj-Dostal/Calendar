@@ -1,33 +1,49 @@
 package sk.duri.calendar.ui.nameDayEdit
 
-import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.app.Application
-import android.content.ContentValues
 import android.content.Context
-import android.os.Environment
-import android.provider.MediaStore
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONObject
 
-class NameDayEditViewModel(application: Application) : ViewModel() {
-    private var isChanged = 0
-    private val assetManager = application.assets
-    private val inputStream = assetManager.open("slovak-name-day.json")
-    private val nameDayJson = JSONObject(inputStream.bufferedReader().use { it.readText() })
+class NameDayEditViewModel(val application: Application) : ViewModel() {
+    private var isChanged = false
+    private var isAllCheck = true
+    private val isExist = application.fileList().contains("custom_name_day.json")
+
+    val assetManager = application.assets
+    val inputStream = assetManager.open("slovak-name-day.json")
+    val nameDayJson = JSONObject(inputStream.bufferedReader().use { it.readText() })
+    var checkNameDay : JSONObject? = null
 
     val nameDayListUiState: MutableStateFlow<NameDayListUiState> = MutableStateFlow(NameDayListUiState())
 
     init {
+        setJson()
+
         val nameDayList = mutableListOf<NameDayCheckBox>()
 
         nameDayJson.keys().forEach { month ->
             val monthJson = nameDayJson.getJSONObject(month)
             monthJson.keys().forEach { day ->
                 val name = monthJson.getString(day)
-                nameDayList.add(NameDayCheckBox(month.toInt(), day.toInt(), name, mutableStateOf(true)))
+                nameDayList.add(NameDayCheckBox(month.toInt(), day.toInt(), name,
+                    if (checkNameDay != null) {
+                        if (checkNameDay!!.has(month) &&
+                            checkNameDay!!.getJSONObject(month).has(day) &&
+                            checkNameDay!!.getJSONObject(month).getString(day) == name) {
+                            mutableStateOf(true)
+                        } else {
+                            isAllCheck = false
+                            mutableStateOf(false)
+                        }
+                    } else {
+                        mutableStateOf(true)
+                    }
+                )
+                )
             }
         }
 
@@ -36,17 +52,49 @@ class NameDayEditViewModel(application: Application) : ViewModel() {
         this.nameDayListUiState.value = NameDayListUiState(nameDayList)
     }
 
-    fun changeIsChecked(nameDayCheckBox: NameDayCheckBox) {
-        if (nameDayCheckBox.isChecked.value) {
-            isChanged--
-        } else {
-            isChanged++
+    fun checkAll() {
+        if (isAllCheck){
+            isAllCheck = false
+            isChanged = true
+            nameDayListUiState.value.nameDayList.forEach {
+                it.isChecked.value = false
+            }
+        } else{
+            isAllCheck = true
+            isChanged = true
+            nameDayListUiState.value.nameDayList.forEach {
+                it.isChecked.value = true
+            }
         }
+    }
+
+     fun save() {
+        if (isChanged) {
+            saveJsonToFile(application)
+        }
+    }
+
+    private fun setJson() {
+        checkNameDay = if (isExist) {
+            val inputStream = application.openFileInput("custom_name_day.json")
+            JSONObject(inputStream.bufferedReader().use { it.readText() })
+        } else {
+            null
+        }
+    }
+
+    fun changeIsChecked(nameDayCheckBox: NameDayCheckBox) {
+        isChanged = true
         nameDayCheckBox.isChecked.value = !nameDayCheckBox.isChecked.value
     }
 
     private fun createJsonFromList(): JSONObject {
         val json = JSONObject()
+        // put to json 12 months JSONObject
+        for (i in 0..11) {
+            json.put(i.toString(), JSONObject())
+        }
+
         val list =  nameDayListUiState.value.nameDayList
         list.filter { it.isChecked.value }.forEach { nameDay ->
             val month = json.optJSONObject(nameDay.month.toString()) ?: JSONObject()
@@ -57,18 +105,6 @@ class NameDayEditViewModel(application: Application) : ViewModel() {
         return json
     }
 
-    fun readJsonFromFile(context: Context, fileName: String): JSONObject? {
-
-
-        return try {
-            val inputStream = context.openFileInput(fileName)
-            val json = JSONObject(inputStream.bufferedReader().use { it.readText() })
-            json
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
 
      fun saveJsonToFile(context: Context){
          val json = createJsonFromList()
@@ -76,7 +112,6 @@ class NameDayEditViewModel(application: Application) : ViewModel() {
          context.openFileOutput(fileName, Context.MODE_PRIVATE).use {
              it.write(json.toString().toByteArray())
          }
-
     }
 }
 

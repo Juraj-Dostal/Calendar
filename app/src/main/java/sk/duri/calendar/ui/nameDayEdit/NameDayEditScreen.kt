@@ -11,6 +11,8 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
@@ -23,10 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
@@ -60,14 +59,21 @@ fun NameDayEditScreen(
                 title = {
                     Text("Calendar")
                 },
-                navigationIcon = {
-
-                },
                 actions = {
-                    IconButton(onClick = navigateToDayCalendar ) {
+                    IconButton(
+                        onClick = {
+                            viewModel.save()
+                            navigateToDayCalendar()
+                        }
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Change screen to DayCalendar")
                     }
-                    IconButton(onClick = navigateToMonthCalendar ) {
+                    IconButton(
+                        onClick = {
+                            viewModel.save()
+                            navigateToMonthCalendar()
+                    }
+                    ) {
                         Icon(Icons.Filled.DateRange , contentDescription = "Change screen to DayCalendar")
                     }
                 }
@@ -75,8 +81,8 @@ fun NameDayEditScreen(
         },
         floatingActionButton =  {
             FloatingActionButton(
-                onClick = navigateToEventEntry,
-            ) { Icon(Icons.Filled.Add, contentDescription = "Add") }
+                onClick = viewModel::checkAll,
+            ) { Icon(Icons.Filled.CheckCircle, contentDescription = "Check") }
         }
     ){  innerPadding ->
         LazyColumn(modifier = Modifier
@@ -134,8 +140,8 @@ fun CheckNameDay(
 @Composable
 fun NameDayEditScreenPreview() {
     NameDayEditScreen(
-        navigateToDayCalendar = { /*TODO*/ },
-        navigateToEventEntry = { /*TODO*/ },
-        navigateToMonthCalendar = { /*TODO*/ }
+        navigateToDayCalendar = { /**/ },
+        navigateToEventEntry = { /**/ },
+        navigateToMonthCalendar = { /**/ }
     )
 }

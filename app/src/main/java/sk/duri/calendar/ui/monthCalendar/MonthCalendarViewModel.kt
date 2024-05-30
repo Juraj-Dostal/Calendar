@@ -14,7 +14,11 @@ import sk.duri.calendar.data.UdalostiRepository
 
 class MonthCalendarViewModel(application: Application, val udalostiRepository: UdalostiRepository ) : ViewModel(){
     private val assetManager = application.assets
-    private val inputStream = assetManager.open("slovak-name-day.json")
+    private val inputStream = if (application.fileList().contains("custom_name_day.json"))
+            application.openFileInput("custom_name_day.json")
+        else
+            assetManager.open("slovak-name-day.json")
+
     val nameDayJson = JSONObject(inputStream.bufferedReader().use { it.readText() })
 
     private val calendar = java.util.Calendar.getInstance()
@@ -31,7 +35,7 @@ class MonthCalendarViewModel(application: Application, val udalostiRepository: U
             this.calendar.get(java.util.Calendar.YEAR),
             nameDayJson
                 .getJSONObject(this.calendar.get(java.util.Calendar.MONTH).toString())
-                .getString(this.calendar.get(java.util.Calendar.DAY_OF_MONTH).toString()) ?: ""
+                .optString(this.calendar.get(java.util.Calendar.DAY_OF_MONTH).toString())
         )
     )
     val actualDay = MutableStateFlow(
@@ -40,7 +44,7 @@ class MonthCalendarViewModel(application: Application, val udalostiRepository: U
             this.calendar.get(java.util.Calendar.YEAR),
             nameDayJson
                 .getJSONObject(this.calendar.get(java.util.Calendar.MONTH).toString())
-                .getString(this.calendar.get(java.util.Calendar.DAY_OF_MONTH).toString()) ?: ""
+                .optString(this.calendar.get(java.util.Calendar.DAY_OF_MONTH).toString())
         )
     )
 
@@ -94,20 +98,20 @@ class MonthCalendarViewModel(application: Application, val udalostiRepository: U
         for (i in 1..firstDayInWeek - 2) {
             val hodnota =lastDayOfPrevMonth - (firstDayInWeek -2) + i
             if (month == 0)
-                days.add(Day(hodnota, 11, year - 1, monthJsonPrev.getString(hodnota.toString()) ?: "" ))
+                days.add(Day(hodnota, 11, year - 1, monthJsonPrev.optString(hodnota.toString())  ))
             else
-                days.add(Day(hodnota, month - 1, year, monthJsonPrev.getString(hodnota.toString()) ?: "" ))
+                days.add(Day(hodnota, month - 1, year, monthJsonPrev.optString(hodnota.toString())  ))
 
             pocitadlo++
         }
 
-        days.addAll((1..lastDayOfMonth).map{ Day(it, month, year, monthJson.getString(it.toString()) ?: "" ) })
+        days.addAll((1..lastDayOfMonth).map{ Day(it, month, year, monthJson.optString(it.toString())  ) })
         pocitadlo += 28
 
         if (month == 11)
-            days.addAll((1..43 - pocitadlo).map{ Day(it, 0, year + 1, monthJsonNext.getString(it.toString()) ?: "" ) })
+            days.addAll((1..43 - pocitadlo).map{ Day(it, 0, year + 1, monthJsonNext.optString(it.toString()) ) })
         else
-            days.addAll((1..43 - pocitadlo).map{ Day(it, month + 1, year, monthJsonNext.getString(it.toString()) ?: "" ) })
+            days.addAll((1..43 - pocitadlo).map{ Day(it, month + 1, year, monthJsonNext.optString(it.toString()) ) })
 
         _daysUiState.value = DaysUiState(days)
     }
@@ -141,5 +145,5 @@ data class Day(
     val day: Int,
     val month: Int,
     val year: Int,
-    val name_Day: String,
+    val nameDay: String,
 )
