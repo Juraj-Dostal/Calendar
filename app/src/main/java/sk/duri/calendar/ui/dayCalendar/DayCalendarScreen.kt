@@ -47,6 +47,7 @@ object DayCalendarDestination : NavigationDestination {
 fun DayCalendarScreen(
     navigateToEventEntry: () -> Unit,
     navigateToMonthCalendar: () -> Unit,
+    navigateToNameDayEdit: () -> Unit,
     viewModel: DayCalendarViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val dayCalendarUiState by viewModel.dayCalendarUiState.collectAsState()
@@ -64,7 +65,7 @@ fun DayCalendarScreen(
                     Text("Calendar")
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = navigateToNameDayEdit ) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
                 },

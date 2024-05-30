@@ -57,6 +57,7 @@ object EventEntryDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventEntryScreen(
+    navigateToNameDayEdit: () -> Unit,
     navigateBack: () -> Unit,
     viewModel: EventEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -73,7 +74,7 @@ fun EventEntryScreen(
                     Text("Calendar")
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = navigateToNameDayEdit ) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
                 },

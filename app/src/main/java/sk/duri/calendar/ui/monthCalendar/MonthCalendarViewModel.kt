@@ -17,8 +17,6 @@ class MonthCalendarViewModel(application: Application, val udalostiRepository: U
     private val inputStream = assetManager.open("slovak-name-day.json")
     val nameDayJson = JSONObject(inputStream.bufferedReader().use { it.readText() })
 
-
-
     private val calendar = java.util.Calendar.getInstance()
 
     private val _calendarUiState = MutableStateFlow(CalendarUiState())

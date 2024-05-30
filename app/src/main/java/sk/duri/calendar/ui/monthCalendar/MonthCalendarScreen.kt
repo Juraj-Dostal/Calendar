@@ -65,6 +65,7 @@ object MonthCalendarDestination : NavigationDestination {
 fun MonthCalendarScreen(
     navigateToDayCalendar: () -> Unit,
     navigateToEventEntry: () -> Unit,
+    navigateToNameDayEdit: () -> Unit,
     viewModel: MonthCalendarViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier
 ) {
@@ -82,7 +83,7 @@ fun MonthCalendarScreen(
                     Text("Calendar")
                 },
                 navigationIcon = {
-                    IconButton(onClick = {  }) {
+                    IconButton(onClick = navigateToNameDayEdit ) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
                     }
                 },
@@ -329,7 +330,8 @@ fun DayEvents(
 fun MonthCalendarScreenPreview() {
     MonthCalendarScreen(
         navigateToDayCalendar = {},
-        navigateToEventEntry = {}
+        navigateToEventEntry = {},
+        navigateToNameDayEdit = {}
     )
 }
 

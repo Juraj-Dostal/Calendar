@@ -8,6 +8,7 @@ import sk.duri.calendar.UdalostiApplication
 import sk.duri.calendar.ui.eventEntry.EventEntryViewModel
 import sk.duri.calendar.ui.dayCalendar.DayCalendarViewModel
 import sk.duri.calendar.ui.monthCalendar.MonthCalendarViewModel
+import sk.duri.calendar.ui.nameDayEdit.NameDayEditViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -25,6 +26,9 @@ object AppViewModelProvider {
             EventEntryViewModel(udalostiApplication().container.udalostiRepository)
         }
 
+        initializer {
+            NameDayEditViewModel(udalostiApplication())
+        }
 
     }
 }
