@@ -321,7 +321,10 @@ fun DayEvents(
         }
         else {
             eventsDayUiState.value.udalostiDni.forEach {
-                Event(it)
+                Event(
+                    event = it,
+                    onDelete = { viewModel.deleteUdalost(it) }
+                )
             }
         }
     }

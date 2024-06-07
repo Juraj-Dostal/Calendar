@@ -1,5 +1,6 @@
 package sk.duri.calendar.ui.dayCalendar
 
+import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -97,21 +99,20 @@ fun DayCalendarScreen(
                     den = it.odDen
                     DayHeader(it.odDen, it.odMesiac, it.odRok)
                 }
-                Event(it)
+                Event(
+                    event = it,
+                    onDelete = { viewModel.deleteUdalost(it) }
+                )
             }
 
         }
     }
-
-
-
 }
-
-
 
 @Composable
 fun Event(
     event: Udalost,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Card(
@@ -121,10 +122,16 @@ fun Event(
         Column(
             modifier = Modifier.padding(20.dp),
         ) {
-            Text(
-            text = event.nazov,
-            style = MaterialTheme.typography.titleLarge
-            )
+            Row {
+                Text(
+                    text = event.nazov,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(Modifier.weight(1f))
+                IconButton(onClick = { onDelete() }) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                }
+            }
             Text(
                 text = event.typ.nazov,
                 style = MaterialTheme.typography.bodyLarge
@@ -211,11 +218,11 @@ fun DayHeader(
 fun DayCalendarScreenPreview() {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         DayHeader(24, 5, 2024)
-        Event(Udalost(1, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024, "Online", TypUdalosti.Udalost))
-        Event(Udalost(2, "Obhajoba AaUS1",0, 8,31,5,2024,30, 9,31,5,2024, "RB054", TypUdalosti.Udalost))
-        Event(Udalost(3, "Zapocet PaS",0,9, 24, 5, 2024,11,40,24,5,2024,  "RA323", TypUdalosti.Udalost))
-        Event(Udalost(4, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024,"Online", TypUdalosti.Udalost))
-        Event(Udalost(5, "Obhajoba AaUS1",  0,9, 24, 5, 2024,11,40,24,5,2024, "RB054", TypUdalosti.Udalost))
-        Event(Udalost(6, "Zapocet PaS",  12,11,7,5,2024, 55,11,11,7,2024, "RA323", TypUdalosti.Udalost))
+        Event(Udalost(1, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024, "Online", TypUdalosti.Udalost), {})
+        Event(Udalost(2, "Obhajoba AaUS1",0, 8,31,5,2024,30, 9,31,5,2024, "RB054", TypUdalosti.Udalost), {})
+        Event(Udalost(3, "Zapocet PaS",0,9, 24, 5, 2024,11,40,24,5,2024,  "RA323", TypUdalosti.Udalost), {})
+        Event(Udalost(4, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024,"Online", TypUdalosti.Udalost), {})
+        Event(Udalost(5, "Obhajoba AaUS1",  0,9, 24, 5, 2024,11,40,24,5,2024, "RB054", TypUdalosti.Udalost), {})
+        Event(Udalost(6, "Zapocet PaS",  12,11,7,5,2024, 55,11,11,7,2024, "RA323", TypUdalosti.Udalost), {})
     }
 }

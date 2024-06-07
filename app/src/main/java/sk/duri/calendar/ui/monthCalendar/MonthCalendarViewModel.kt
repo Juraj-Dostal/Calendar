@@ -125,6 +125,11 @@ class MonthCalendarViewModel(application: Application, val udalostiRepository: U
         }
 
     }
+    fun deleteUdalost(udalost: Udalost) {
+        viewModelScope.launch {
+            udalostiRepository.deleteUdalost(udalost)
+        }
+    }
 }
 
 
