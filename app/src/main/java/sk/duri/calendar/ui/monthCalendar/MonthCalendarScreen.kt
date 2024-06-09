@@ -63,11 +63,12 @@ object MonthCalendarDestination : NavigationDestination {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MonthCalendarScreen(
+    modifier: Modifier = Modifier,
     navigateToDayCalendar: () -> Unit,
     navigateToEventEntry: () -> Unit,
     navigateToNameDayEdit: () -> Unit,
-    viewModel: MonthCalendarViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    modifier: Modifier = Modifier
+    navigateToEventEdit: (Int) -> Unit,
+    viewModel: MonthCalendarViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val daysUiState = viewModel.daysUiState.collectAsState()
     val days = daysUiState.value.days
@@ -100,7 +101,7 @@ fun MonthCalendarScreen(
             ) { Icon(Icons.Filled.Add, contentDescription = "Add") }
         }
     ){  innerPadding ->
-        Column(modifier = Modifier
+        Column(modifier = modifier
             .fillMaxSize()
             .padding(innerPadding)
             .verticalScroll(rememberScrollState())
@@ -113,7 +114,8 @@ fun MonthCalendarScreen(
                     .padding(3.dp)
             )
             DayEvents(
-                viewModel,
+                navigateToEventEdit = navigateToEventEdit,
+                viewModel = viewModel,
                 modifier = Modifier
                     .padding(top = 5.dp)
             )
@@ -251,6 +253,7 @@ fun DayItem(
 
 @Composable
 fun DayEvents(
+    navigateToEventEdit: (Int) -> Unit,
     viewModel: MonthCalendarViewModel,
     modifier: Modifier = Modifier
 ) {
@@ -323,7 +326,8 @@ fun DayEvents(
             eventsDayUiState.value.udalostiDni.forEach {
                 Event(
                     event = it,
-                    onDelete = { viewModel.deleteUdalost(it) }
+                    onDelete = { viewModel.deleteUdalost(it) },
+                    onEdit = navigateToEventEdit
                 )
             }
         }
@@ -336,7 +340,8 @@ fun MonthCalendarScreenPreview() {
     MonthCalendarScreen(
         navigateToDayCalendar = {},
         navigateToEventEntry = {},
-        navigateToNameDayEdit = {}
+        navigateToNameDayEdit = {},
+        navigateToEventEdit = {}
     )
 }
 

@@ -1,6 +1,5 @@
 package sk.duri.calendar.ui.dayCalendar
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,11 +50,12 @@ fun DayCalendarScreen(
     navigateToEventEntry: () -> Unit,
     navigateToMonthCalendar: () -> Unit,
     navigateToNameDayEdit: () -> Unit,
+    navigateToEventEdit: (Int) -> Unit,
     viewModel: DayCalendarViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val dayCalendarUiState by viewModel.dayCalendarUiState.collectAsState()
-    var mesiac = 0;
-    var den = 0;
+    var mesiac = 0
+    var den = 0
 
     Scaffold (
         topBar = {
@@ -101,7 +102,8 @@ fun DayCalendarScreen(
                 }
                 Event(
                     event = it,
-                    onDelete = { viewModel.deleteUdalost(it) }
+                    onDelete = { viewModel.deleteUdalost(it) },
+                    onEdit = navigateToEventEdit
                 )
             }
 
@@ -113,6 +115,7 @@ fun DayCalendarScreen(
 fun Event(
     event: Udalost,
     onDelete: () -> Unit,
+    onEdit: (Int) -> Unit,
     modifier: Modifier = Modifier
 ){
     Card(
@@ -130,6 +133,9 @@ fun Event(
                 Spacer(Modifier.weight(1f))
                 IconButton(onClick = { onDelete() }) {
                     Icon(Icons.Filled.Delete, contentDescription = "Delete")
+                }
+                IconButton(onClick = { onEdit(event.id) }) {
+                    Icon(Icons.Filled.Edit, contentDescription = "Edit")
                 }
             }
             Text(
@@ -218,11 +224,11 @@ fun DayHeader(
 fun DayCalendarScreenPreview() {
     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
         DayHeader(24, 5, 2024)
-        Event(Udalost(1, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024, "Online", TypUdalosti.Udalost), {})
-        Event(Udalost(2, "Obhajoba AaUS1",0, 8,31,5,2024,30, 9,31,5,2024, "RB054", TypUdalosti.Udalost), {})
-        Event(Udalost(3, "Zapocet PaS",0,9, 24, 5, 2024,11,40,24,5,2024,  "RA323", TypUdalosti.Udalost), {})
-        Event(Udalost(4, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024,"Online", TypUdalosti.Udalost), {})
-        Event(Udalost(5, "Obhajoba AaUS1",  0,9, 24, 5, 2024,11,40,24,5,2024, "RB054", TypUdalosti.Udalost), {})
-        Event(Udalost(6, "Zapocet PaS",  12,11,7,5,2024, 55,11,11,7,2024, "RA323", TypUdalosti.Udalost), {})
+        Event(Udalost(1, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024, "Online", TypUdalosti.Udalost), {}, {})
+        Event(Udalost(2, "Obhajoba AaUS1",0, 8,31,5,2024,30, 9,31,5,2024, "RB054", TypUdalosti.Udalost), {}, {})
+        Event(Udalost(3, "Zapocet PaS",0,9, 24, 5, 2024,11,40,24,5,2024,  "RA323", TypUdalosti.Udalost), {}, {})
+        Event(Udalost(4, "Skuska INF2", 0,9, 24, 5, 2024,11,40,24,5,2024,"Online", TypUdalosti.Udalost), {}, {})
+        Event(Udalost(5, "Obhajoba AaUS1",  0,9, 24, 5, 2024,11,40,24,5,2024, "RB054", TypUdalosti.Udalost), {}, {})
+        Event(Udalost(6, "Zapocet PaS",  12,11,7,5,2024, 55,11,11,7,2024, "RA323", TypUdalosti.Udalost), {}, {})
     }
 }

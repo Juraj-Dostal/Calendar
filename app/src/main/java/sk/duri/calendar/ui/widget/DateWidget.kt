@@ -30,7 +30,7 @@ import sk.duri.calendar.R
 
 
 /**
- *  Zobrate a upravene z internetu
+ *  Inspirovane z internetu
  *  link: https://medium.com/@binayshaw7777/creating-a-simple-calendar-widget-using-jetpack-compose-glance-db2ad133459e
  */
 
