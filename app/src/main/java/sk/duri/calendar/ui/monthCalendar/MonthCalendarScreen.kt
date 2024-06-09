@@ -80,7 +80,7 @@ fun MonthCalendarScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Calendar")
+                    Text(stringResource(R.string.app_name))
                 },
                 navigationIcon = {
                     IconButton(onClick = navigateToNameDayEdit ) {

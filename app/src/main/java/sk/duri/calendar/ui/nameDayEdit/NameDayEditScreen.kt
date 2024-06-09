@@ -28,10 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import sk.duri.calendar.R
 import sk.duri.calendar.ui.AppViewModelProvider
 import sk.duri.calendar.ui.navigation.NavigationDestination
 
@@ -57,7 +59,7 @@ fun NameDayEditScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Calendar")
+                    Text(stringResource(R.string.app_name))
                 },
                 actions = {
                     IconButton(

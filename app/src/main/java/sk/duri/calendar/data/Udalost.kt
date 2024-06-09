@@ -22,12 +22,10 @@ data class Udalost(
 )
 
 enum class TypUdalosti(val nazov: String) {
-    Udalost("Event"),
-    Narodeniny("Bitrhday"),
-    Meniny("Name day"),
-    Sviatok("Holiday"),
-    Praca("Work"),
-    Skola("School"),
-    Dovolenka("Vacation"),
-    Ostatne("Other")
+    Udalost("Udalosť"),
+    Narodeniny("Narodeniny"),
+    Praca("Práca"),
+    Skola("Škola"),
+    Dovolenka("Dovolenka"),
+    Ostatne("Ostatné")
 }

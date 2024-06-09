@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -36,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -71,7 +73,7 @@ fun EventEntryScreen(
                     titleContentColor = MaterialTheme.colorScheme.primary,
                 ),
                 title = {
-                    Text("Calendar")
+                    Text(stringResource(R.string.app_name))
                 },
                 navigationIcon = {
                     IconButton(onClick = navigateToNameDayEdit ) {
@@ -119,21 +121,30 @@ fun EventEntryBody(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column {
+    Column(
+        modifier = modifier
+            .padding(5.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         OutlinedTextField(
             value = udalostDetails.nazov,
             onValueChange = { onUdalostValueChange( udalostDetails.copy(nazov = it) )},
             label = { Text(text = stringResource(R.string.nameEvent)) },
-            modifier = modifier.align(Alignment.CenterHorizontally),
+            modifier = modifier
+                .align(Alignment.CenterHorizontally)
+                .fillMaxWidth()
+                .padding(10.dp),
             )
         Box(
             modifier = Modifier
                 .wrapContentSize(Alignment.TopStart)
                 .align(Alignment.CenterHorizontally)
                 .padding(5.dp)
-                .height(30.dp)
+                .width(200.dp)
+                .height(50.dp)
+                .clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.primary)
-
         ) {
             Text(
                 text = udalostDetails.typ.nazov,
@@ -141,20 +152,24 @@ fun EventEntryBody(
                 fontSize = 20.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
+                    .align(Alignment.Center)
                     .clickable(onClick = { expanded = true })
-                    .fillMaxWidth()
             )
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false},
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .width(200.dp)
+                    .align(Alignment.Center)
                     .padding(vertical = 10.dp)
 
             ) {
                 TypUdalosti.entries.forEach {
                     DropdownMenuItem(
-                        text = { Text(text = it.nazov) },
+                        text = { Text(
+                            text = it.nazov,
+                            textAlign = TextAlign.Center,
+                        ) },
                         onClick = {
                             onUdalostValueChange(udalostDetails.copy(typ = it))
                             expanded = false
@@ -188,10 +203,13 @@ fun EventEntryBody(
             value = udalostDetails.poznamka,
             onValueChange = { onUdalostValueChange(udalostDetails.copy(poznamka = it)) },
             modifier = modifier
-                .align(Alignment.CenterHorizontally),
+                .align(Alignment.CenterHorizontally)
+                .fillMaxWidth()
+                .padding(10.dp),
         )
         Row(
-            modifier = modifier.align(Alignment.CenterHorizontally)
+            modifier = modifier
+                .align(Alignment.CenterHorizontally)
         ) {
             Button(
                 onClick = onSaveClick,
@@ -224,7 +242,7 @@ fun FromDateInput(
             fontSize = 30.sp,
             textAlign = TextAlign.Center,
         )
-        Row {
+        Row{
             Text(
                 text = stringResource(R.string.time),
                 fontSize = 20.sp,
@@ -234,7 +252,12 @@ fun FromDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.odHodina,
-                onValueChange = { onUdalostValueChange(udalostDetails.copy( odHodina = it )) },
+                onValueChange = {
+                    val newValue = it.toIntOrNull() ?: 0
+                    if (newValue in 0..24) {
+                    onUdalostValueChange(udalostDetails.copy( odHodina = it ))
+                    }
+                                },
                 label = { Text(text = stringResource(R.string.hour)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -250,7 +273,12 @@ fun FromDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.odMinuta,
-                onValueChange = { onUdalostValueChange(udalostDetails.copy( odMinuta = it ))},
+                onValueChange = {
+                    val newValue = it.toIntOrNull() ?: 0
+                    if ( newValue in 0..60) {
+                    onUdalostValueChange(udalostDetails.copy( odMinuta = it ))
+                    }
+                                },
                 label = { Text(text = stringResource(R.string.minute)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -268,7 +296,12 @@ fun FromDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.odDen,
-                onValueChange =  { onUdalostValueChange(udalostDetails.copy( odDen = it ))},
+                onValueChange =  {
+                    val newValue = it.toIntOrNull() ?: 1
+                    if ( newValue in 1..31) {
+                        onUdalostValueChange(udalostDetails.copy(odDen = it))
+                    }
+                                 },
                 label = { Text(text = stringResource(R.string.day)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -284,7 +317,12 @@ fun FromDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.odMesiac,
-                onValueChange =  { onUdalostValueChange(udalostDetails.copy( odMesiac = it ))},
+                onValueChange =  {
+                    val newValue = it.toIntOrNull() ?: 1
+                    if ( newValue in 1..12) {
+                        onUdalostValueChange(udalostDetails.copy(odMesiac = it))
+                    }
+                                 },
                 label = { Text(text = stringResource(R.string.month)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -300,7 +338,12 @@ fun FromDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.odRok,
-                onValueChange = { onUdalostValueChange(udalostDetails.copy( odRok = it ))},
+                onValueChange = {
+                    val newValue = it.toIntOrNull() ?: 2000
+                    if ( newValue in 1..4000) {
+                        onUdalostValueChange(udalostDetails.copy(odRok = it))
+                    }
+                                },
                 label = { Text(text = stringResource(R.string.year)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -336,7 +379,12 @@ fun ToDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.doHodina,
-                onValueChange = { onUdalostValueChange(udalostDetails.copy( doHodina = it )) },
+                onValueChange = {
+                    val newValue = it.toIntOrNull() ?: 0
+                    if (newValue in 0..24) {
+                        onUdalostValueChange(udalostDetails.copy(doHodina = it))
+                    }
+                                },
                 label = { Text(text = stringResource(R.string.hour)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -352,7 +400,12 @@ fun ToDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.doMinuta,
-                onValueChange = { onUdalostValueChange(udalostDetails.copy( doMinuta = it ))},
+                onValueChange = {
+                    val newValue = it.toIntOrNull() ?: 0
+                    if (newValue in 0..60) {
+                        onUdalostValueChange(udalostDetails.copy(doMinuta = it))
+                    }
+                                },
                 label = { Text(text = stringResource(R.string.minute)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -370,7 +423,12 @@ fun ToDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.doDen,
-                onValueChange =  { onUdalostValueChange(udalostDetails.copy( doDen = it ))},
+                onValueChange =  {
+                    val newValue = it.toIntOrNull() ?: 1
+                    if ( newValue in 1..31) {
+                        onUdalostValueChange(udalostDetails.copy(doDen = it))
+                    }
+                                 },
                 label = { Text(text = stringResource(R.string.day)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -386,7 +444,12 @@ fun ToDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.doMesiac,
-                onValueChange =  { onUdalostValueChange(udalostDetails.copy( doMesiac = it ))},
+                onValueChange =  {
+                    val newValue = it.toIntOrNull() ?: 1
+                    if ( newValue in 1..12) {
+                        onUdalostValueChange(udalostDetails.copy(doMesiac = it))
+                    }
+                                 },
                 label = { Text(text = stringResource(R.string.month)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -402,7 +465,12 @@ fun ToDateInput(
             )
             OutlinedTextField(
                 value = udalostDetails.doRok,
-                onValueChange = { onUdalostValueChange(udalostDetails.copy( doRok = it ))},
+                onValueChange = {
+                    val newValue = it.toIntOrNull() ?: 2000
+                    if ( newValue in 1..4000) {
+                        onUdalostValueChange(udalostDetails.copy( doRok = it ))
+                    }
+                                },
                 label = { Text(text = stringResource(R.string.year)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 maxLines = 1,
@@ -419,8 +487,8 @@ fun EventEntryScreenPreview() {
     CalendarTheme {
         EventEntryBody(
             udalostDetails = UdalostDetails(1, "Event", "0", "13", "1", "1", "2022", "30", "13", "1", "1", "2022", "Note", TypUdalosti.Udalost),
-            onUdalostValueChange = { /*TODO*/ },
-            navigateBack = { /*TODO*/ },
-            onSaveClick = { /*TODO*/ })
+            onUdalostValueChange = { /**/ },
+            navigateBack = { /**/ },
+            onSaveClick = { /**/ })
     }
 }
